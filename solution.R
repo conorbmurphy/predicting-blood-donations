@@ -8,13 +8,9 @@ test <- read.csv("test.csv")
 
 # EDA
 
-require(lattice)
-require(ggplot2)
-cor(train)
-
 # There are effectively 3 input variables: Months.since.First.Donation,
 # Months.since.Last.Donation, and Number.of.Donations, which should be 
-# be represented in the colors of the French flag
+# be represented in the colors of the French flag.
 par(mfrow = c(1, 3))
 with(train, {
         hist(Months.since.First.Donation, col = "blue", main = "Months Since First")
@@ -23,6 +19,8 @@ with(train, {
 })
 
 # Now let's look for correlations to the output Made.Donation.in.March.2007
+cor(train)
+
 first <- lm(Months.since.First.Donation ~ Made.Donation.in.March.2007, train)
 last <- lm(Months.since.Last.Donation ~ Made.Donation.in.March.2007, train)
 totnum <- lm(Number.of.Donations ~ Made.Donation.in.March.2007, train)
@@ -40,16 +38,22 @@ with(train, {
         abline(totnum, lwd = 2)
 })
 
+# Months.since.First.Donation does not appear to have a strong correlation to
+# a blood donation in March 07.  The other two variables have stronger
+# correlations
+
+require(ggplot2)
+qplot(Months.since.First.Donation, Months.since.Last.Donation, data = train, 
+      facets = .~Made.Donation.in.March.2007, col = Made.Donation.in.March.2007, 
+      alpha = 3/4, ylim = c(0,25), geom = c("point", "smooth"), method = "lm")
+# This shows that there is a correlation between months since first and last 
+# Donations
 
 
-qplot(Made.Donation.in.March.2007, Months.since.Last.Donation, data = train)
-qplot(Made.Donation.in.March.2007, Months.since.First.Donation, data = train)
-qplot(Made.Donation.in.March.2007, Number.of.Donations, data = train)
+# Let's look at this: http://www.ats.ucla.edu/stat/r/dae/logit.htm
 
 
-xyplot(Months.since.Last.Donation ~ Number.of.Donations | Made.Donation.in.March.2007,
-       data = train, 
-       layout = c(2,1))
+
 
 
 # Add a column of data which expresses the interval over which each
