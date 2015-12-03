@@ -49,6 +49,16 @@ qplot(Months.since.First.Donation, Months.since.Last.Donation, data = train,
 # This shows that there is a correlation between months since first and last 
 # Donations
 
+pairs(cbind(Months.since.Last.Donation,Months.since.First.Donation,Number.of.Donations), gap = 0, panel = panel.smooth)
+
+# From Jon (check line 60)
+# first time donors
+blood$first.time <- ifelse(blood$Number.of.Donations == 1,1,0)
+# months between first donation and last donation
+blood$active.months <- ifelse(blood$first.time == 1,0,(blood$Months.since.First.Donation - blood$Months.since.Last.Donation) - 1)
+# donation cycle - how often does the person donate
+blood$cycle <- ifelse(blood$active.months == 0,1,blood$active.months)/blood$Number.of.Donations
+
 
 # Let's look at this: http://www.ats.ucla.edu/stat/r/dae/logit.htm
 
