@@ -1,4 +1,5 @@
-# Get the training data provided by the challenge.
+### Importing the Data ###
+
 download.file("https://drivendata.s3.amazonaws.com/data/2/public/9db113a1-cdbe-4b1c-98c2-11590f124dd8.csv",
               "training.csv")
 download.file("https://drivendata.s3.amazonaws.com/data/2/public/5c9fa979-5a84-45d6-93b9-543d1a0efc41.csv",
@@ -7,19 +8,37 @@ train <- read.csv("training.csv")
 test <- read.csv("test.csv")
 attach(train)
 
-# EDA
+### EDA - Basic Summaries ###
+
+str(train)
+str(test)
+table(Made.Donation.in.March.2007)
+(138/438)*100
+# 138 of 438 donors, or 31.5%, gave in March 2007.
+
+### EDA - Missing Data ###
+
+sum(is.na(train))
+
+# There are no missing values in this data.
+
+### EDA - Exploratory Graphs ###
 
 # There are effectively 3 input variables: Months.since.First.Donation,
 # Months.since.Last.Donation, and Number.of.Donations, which should be 
-# be represented in the colors of the French flag.
+# be represented in the colors of the French flag.  Total.Volume.Donated..c.c
+# is consistent at 250 c.c. per donation.
+
 par(mfrow = c(1, 3))
 with(train, {
-        hist(Months.since.First.Donation, col = "blue", main = "Months Since First")
-        hist(Months.since.Last.Donation, main = "Months Since Last")
-        hist(Number.of.Donations, col = "red", main = "Total # Donations")
+        hist(Months.since.First.Donation, col = "blue", 
+             main = "Months Since 1st Donation")
+        hist(Months.since.Last.Donation, main = "Months Since Last Donation")
+        hist(Number.of.Donations, col = "red", main = "Total # of Donations")
 })
 
 # Now let's look for correlations to the output Made.Donation.in.March.2007
+
 cor(train)
 
 first <- lm(Months.since.First.Donation ~ Made.Donation.in.March.2007, train)
@@ -29,19 +48,27 @@ totnum <- lm(Number.of.Donations ~ Made.Donation.in.March.2007, train)
 par(mfrow = c(1, 3))
 with(train, {
         plot(Made.Donation.in.March.2007, Months.since.First.Donation, 
-             col = "blue", main = "Months Since First")
+             col = "blue", main = "Months Since 1st Donation")
         abline(first, lwd = 2)
         plot(Made.Donation.in.March.2007, Months.since.Last.Donation, 
-             main = "Months Since Last")
+             main = "Months Since Last Donation")
         abline(last, lwd = 2)
         plot(Made.Donation.in.March.2007, Number.of.Donations, col = "red",
-             main = "Total # Donations")
+             main = "Total # of Donations")
         abline(totnum, lwd = 2)
 })
 
 # Months.since.First.Donation does not appear to have a strong correlation to
 # a blood donation in March 07.  The other two variables have stronger
 # correlations
+
+# lmDat <- data.frame(Months.since.Last.Donation, Number.of.Donations,
+#                    Months.since.First.Donation, Made.Donation.in.March.2007)
+# for (i in 3) {
+#        glmFit <- glm(Made.Donation.in.March.2007 ~ lmDat[i], 
+#                      family = "binomial", data = lmDat)
+#}
+# This is broken
 
 require(ggplot2)
 qplot(Months.since.First.Donation, Months.since.Last.Donation, data = train, 
