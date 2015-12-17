@@ -96,6 +96,15 @@ mydata$rank <- factor(mydata$rank)
 mylogit <- glm(admit ~ gre + gpa + rank, data = mydata, family = "binomial") #generalized linear model
 summary(mylogit)
 
+glmFit <- glm(Made.Donation.in.March.2007 ~ Number.of.Donations + Months.since.First.Donation + Months.since.Last.Donation, family = "binomial")
+confint(glmFit) # Calculating confidence intervals with log likelihood
+confint.default(glmFit) # Calculating CI using standard errors
+exp(cbind(OR = coef(glmFit), confint(glmFit))) # odds ration with 95% confidence interval
+# This shows that the odds of giving in March 07 increases by the OR column with each unit increase in Number of donations, months since first donation, etc.
+newdata1 <- with(train, data.frame(NumDon = mean(Number.of.Donations), MonFir = mean(Months.since.First.Donation), MonLas = mean(Months.since.Last.Donation)))
+# newdata1$Model <- predict(glmFit, newdata = newdata1, type = "response") # START BACK HERE
+
+
 # Applying the above model to our dataset
 LogitReg <- glm(Made.Donation.in.March.2007 ~ Months.since.First.Donation +
                         Months.since.Last.Donation + Number.of.Donations,
